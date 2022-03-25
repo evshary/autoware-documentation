@@ -91,7 +91,7 @@ python3 -m pip install -U \
   pytest \
   setuptools
 
-# Initalize rosdep
+# Initialize rosdep
 sudo rosdep init
 rosdep update
 ```
