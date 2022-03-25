@@ -16,21 +16,134 @@
    git clone https://github.com/autowarefoundation/autoware.git
    ```
 
-2. Install the dependencies.
+2. You can install the dependencies either manually or using the provided Ansible script.
 
-   ```bash
-   ./setup-dev-env.sh docker
-   ```
+### Installing dependencies manually
 
-!!!warning
+Install Docker Engine and post-installation steps:
 
-    Be very careful with this method. Make sure you read and confirmed all the steps in the Ansible configuration before using it.
+```bash
+# Taken from: https://docs.docker.com/engine/install/ubuntu/
+# And: https://docs.docker.com/engine/install/linux-postinstall/
 
-If you want to manually install the dependencies:
+# Uninstall old versions
+sudo apt-get remove docker docker-engine docker.io containerd runc
 
-- See the roles in [docker.yaml](https://github.com/autowarefoundation/autoware/blob/main/ansible/playbooks/docker.yaml).
-- Read the READMEs of each role under the [ansible/roles](https://github.com/autowarefoundation/autoware/tree/main/ansible/roles) directory.
-- Install the listed dependencies following the linked resources.
+# Install using the repository
+sudo apt-get update
+
+sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+# Add Docker’s official GPG key:
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# Install Docker Engine
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+# Verify that Docker Engine is installed correctly by running the hello-world image.
+sudo docker run hello-world
+# Note: This command downloads a test image and runs it in a container. When the container runs, it prints a message and exits.
+
+# Post-installation steps for Linux
+
+# Create the docker group.
+sudo groupadd docker
+
+# Add your user to the docker group.
+sudo usermod -aG docker $USER
+
+# Log out and log back in so that your group membership is re-evaluated.
+
+# Verify that you can run docker commands without sudo
+docker run hello-world
+# Note: This command downloads a test image and runs it in a container. When the container runs, it prints a message and exits.
+```
+
+Install Nvidia Container Toolkit:
+
+```bash
+# Taken from https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#setting-up-nvidia-container-toolkit
+
+# Setup the package repository and the GPG key:
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \
+      && curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | sudo apt-key add - \
+      && curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+# Install the nvidia-docker2 package (and dependencies) after updating the package listing:
+sudo apt-get update
+sudo apt-get install -y nvidia-docker2
+
+# Restart the Docker daemon to complete the installation after setting the default runtime:
+sudo systemctl restart docker
+
+# At this point, a working setup can be tested by running a base CUDA container:
+sudo docker run --rm --gpus all nvidia/cuda:11.0-base nvidia-smi
+
+# This should result in a console output shown below:
+# +-----------------------------------------------------------------------------+
+# | NVIDIA-SMI 450.51.06    Driver Version: 450.51.06    CUDA Version: 11.0     |
+# |-------------------------------+----------------------+----------------------+
+# | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+# | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+# |                               |                      |               MIG M. |
+# |===============================+======================+======================|
+# |   0  Tesla T4            On   | 00000000:00:1E.0 Off |                    0 |
+# | N/A   34C    P8     9W /  70W |      0MiB / 15109MiB |      0%      Default |
+# |                               |                      |                  N/A |
+# +-------------------------------+----------------------+----------------------+
+#
+# +-----------------------------------------------------------------------------+
+# | Processes:                                                                  |
+# |  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+# |        ID   ID                                                   Usage      |
+# |=============================================================================|
+# |  No running processes found                                                 |
+# +-----------------------------------------------------------------------------+
+```
+
+Install Docker Compose:
+
+```bash
+# Taken from: https://docs.docker.com/compose/install/#install-compose-on-linux-systems
+
+# Run this command to download the current stable release of Docker Compose:
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+
+# Apply executable permissions to the binary:
+sudo chmod +x /usr/local/bin/docker-compose
+
+# Optionally Install command completion
+# Place the completion script in /etc/bash_completion.d/
+sudo curl \
+    -L https://raw.githubusercontent.com/docker/compose/1.29.2/contrib/completion/bash/docker-compose \
+    -o /etc/bash_completion.d/docker-compose
+# Reload your terminal. You can close and then open a new terminal, or reload your setting with source ~/.bashrc command in your current terminal.
+source ~/.bashrc
+
+# Test the installation.
+docker-compose --version
+```
+
+Install rocker:
+
+```bash
+# Taken from: https://github.com/osrf/rocker#installation
+sudo apt update
+sudo apt-get install python3-rocker
+```
+
+### Installing dependencies using Ansible
+
+Be very careful with this method. Make sure you read and confirmed all the steps in the Ansible configuration before using it.
+
+```bash
+./setup-dev-env.sh docker
+```
 
 ## How to set up a workspace
 
