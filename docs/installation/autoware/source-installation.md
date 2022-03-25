@@ -172,6 +172,8 @@ sudo apt-mark hold libcudnn8 libcudnn8-dev
 
 Be very careful with this method. Make sure you read and confirmed all the steps in the Ansible configuration before using it.
 
+If you've manually installed the dependencies, you can skip this section.
+
 ```bash
 ./setup-dev-env.sh
 ```
