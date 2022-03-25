@@ -141,6 +141,8 @@ sudo apt-get install python3-rocker
 
 Be very careful with this method. Make sure you read and confirmed all the steps in the Ansible configuration before using it.
 
+If you've manually installed the dependencies, you can skip this section.
+
 ```bash
 ./setup-dev-env.sh docker
 ```
